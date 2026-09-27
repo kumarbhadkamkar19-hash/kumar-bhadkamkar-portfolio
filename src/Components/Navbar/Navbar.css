@@ -1,0 +1,414 @@
+/* ================================================
+   NAVBAR — GSAP Premium  |  Navbar.css
+   ================================================ */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 22px 0;
+  transition: padding 0.4s cubic-bezier(0.4,0,0.2,1),
+              background 0.4s cubic-bezier(0.4,0,0.2,1),
+              box-shadow 0.4s cubic-bezier(0.4,0,0.2,1);
+  will-change: transform, opacity; /* GSAP entrance */
+}
+
+.navbar.scrolled {
+  padding: 12px 0;
+  background: rgba(5, 7, 14, 0.82);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border-bottom: 1px solid rgba(255,255,255,0.065);
+  box-shadow:
+    0 4px 30px rgba(0,0,0,0.55),
+    0 1px 0 rgba(59,130,246,0.06);
+}
+
+/* Top edge shimmer line when scrolled */
+.navbar.scrolled::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 20%; width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59,130,246,0.25), transparent);
+  pointer-events: none;
+}
+
+/* ── Inner layout ─────────────────────────── */
+.nav-inner {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── Logo ─────────────────────────────────── */
+.logo {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  will-change: transform, opacity;
+  user-select: none;
+}
+
+.logo-bracket {
+  color: rgba(59,130,246,0.55);
+  font-size: 1.1rem;
+  font-weight: 400;
+  transition: color 0.3s ease;
+}
+
+.logo:hover .logo-bracket { color: var(--primary); }
+
+.logo-text {
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.logo-dot {
+  color: var(--accent);
+  font-size: 1.6rem;
+  line-height: 0;
+  margin-top: 4px;
+  animation: dotPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%     { opacity: 0.55; transform: scale(0.85); }
+}
+
+/* ── Desktop Nav Links ────────────────────── */
+.nav-links.desktop {
+  display: flex;
+  list-style: none;
+  gap: 2px;
+  margin: 0; padding: 0;
+}
+
+.nav-link {
+  position: relative;
+  padding: 9px 16px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: 'Sora', sans-serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  border-radius: 999px;
+  transition: color 0.3s ease, background 0.3s ease;
+  display: inline-block;
+  will-change: transform;
+}
+
+.nav-link:hover { color: var(--text-primary); }
+
+.nav-link.active {
+  color: var(--text-primary);
+  background: rgba(59,130,246,0.08);
+}
+
+/* Animated underline bar */
+.nav-underline {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 65%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 999px;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  transform-origin: center;
+}
+
+.nav-link:hover .nav-underline,
+.nav-link.active .nav-underline {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* Active dot indicator */
+.nav-link.active::before {
+  content: '';
+  position: absolute;
+  top: 6px; right: 8px;
+  width: 4px; height: 4px;
+  background: var(--primary);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--primary);
+}
+
+/* ── Nav Actions (social + hamburger) ─────── */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  will-change: transform, opacity;
+}
+
+.nav-social.desktop {
+  display: flex;
+  gap: 6px;
+}
+
+.social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.07);
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  text-decoration: none;
+}
+
+.social-icon:hover {
+  color: var(--primary);
+  border-color: rgba(59,130,246,0.35);
+  background: rgba(59,130,246,0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(59,130,246,0.2);
+}
+
+/* ── Mobile Hamburger ─────────────────────── */
+.mobile-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px; height: 38px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 10px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s;
+  will-change: transform;
+}
+
+.mobile-toggle:hover {
+  background: rgba(59,130,246,0.1);
+  border-color: rgba(59,130,246,0.3);
+}
+
+/* ================================================
+   MOBILE OVERLAY
+   ================================================ */
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
+  z-index: 1098;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* ================================================
+   MOBILE DRAWER
+   ================================================ */
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(300px, 88vw);
+  height: 100dvh;
+  background: rgba(5, 8, 18, 0.96);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border-left: 1px solid rgba(255,255,255,0.07);
+  box-shadow: -20px 0 60px rgba(0,0,0,0.7);
+  z-index: 1099;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  transform: translateX(100%); /* GSAP drives open/close */
+  will-change: transform;
+  overflow: hidden;
+}
+
+/* Drawer top accent line */
+.mobile-drawer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  opacity: 0.7;
+}
+
+/* ── Drawer Header ── */
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.drawer-logo {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.drawer-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.drawer-close:hover {
+  background: rgba(220,38,38,0.12);
+  border-color: rgba(220,38,38,0.3);
+  color: #f87171;
+}
+
+/* ── Mobile Nav Links ── */
+.mobile-nav-links {
+  list-style: none;
+  padding: 16px 16px;
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+  will-change: transform, opacity;
+}
+
+.mobile-nav-link:hover {
+  color: var(--text-primary);
+  background: rgba(59,130,246,0.07);
+  border-color: rgba(59,130,246,0.12);
+  transform: translateX(4px);
+}
+
+.mobile-nav-link.active {
+  color: var(--text-primary);
+  background: rgba(59,130,246,0.1);
+  border-color: rgba(59,130,246,0.2);
+}
+
+.mobile-link-num {
+  font-size: 0.7rem;
+  color: var(--primary);
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  opacity: 0.7;
+  min-width: 22px;
+  letter-spacing: 0.05em;
+}
+
+.mobile-nav-link.active .mobile-link-num { opacity: 1; }
+
+/* ── Drawer Footer ── */
+.drawer-footer {
+  padding: 18px 24px 28px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.drawer-social {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: all 0.25s;
+}
+
+.drawer-social:hover {
+  color: var(--primary);
+  background: rgba(59,130,246,0.08);
+  border-color: rgba(59,130,246,0.2);
+  transform: translateX(3px);
+}
+
+/* ================================================
+   RESPONSIVE BREAKPOINTS
+   ================================================ */
+
+/* ── Tablet (768–1024px) ── */
+@media (max-width: 1024px) {
+  .nav-links.desktop {
+    gap: 0;
+  }
+  .nav-link {
+    padding: 8px 12px;
+    font-size: 0.875rem;
+  }
+}
+
+/* ── Mobile (≤768px) ── */
+@media (max-width: 768px) {
+  .nav-links.desktop,
+  .nav-social.desktop {
+    display: none;
+  }
+  .mobile-toggle {
+    display: inline-flex;
+  }
+  .nav-inner {
+    padding: 0 18px;
+  }
+  .navbar {
+    padding: 16px 0;
+  }
+  .navbar.scrolled {
+    padding: 10px 0;
+  }
+}
+
+/* ── Small mobile (≤420px) ── */
+@media (max-width: 420px) {
+  .mobile-drawer {
+    width: 100vw;
+    border-left: none;
+  }
+  .logo { font-size: 1.2rem; }
+}
