@@ -3,7 +3,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FiGithub, FiLinkedin, FiDownload, FiArrowRight } from "react-icons/fi";
 import "./Home.css";
-
+import profile from "../../assets/images/profile.jpg";
 gsap.registerPlugin(ScrollTrigger);
 
 function Home() {
@@ -429,7 +429,7 @@ function Home() {
               <FiDownload /> Resume
             </a>
           </div>
-  
+
           <div className="social-row" ref={socialRef}>
             <a
               href="https://github.com/kumarbhadkamkar19-hash"
@@ -460,7 +460,7 @@ function Home() {
 
             <div className="profile-img-wrap" ref={profileImgRef}>
               <img
-                src="/src/assets/images/profile.jpg"
+                src={profile}
                 alt="Kumar Bhadkamkar"
                 className="profile-img"
               />
