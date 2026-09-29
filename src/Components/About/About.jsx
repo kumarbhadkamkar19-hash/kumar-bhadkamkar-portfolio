@@ -1,10 +1,25 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { FaArrowRight, FaCode, FaServer, FaBolt, FaUsers } from "react-icons/fa";
 import {
-  SiReact, SiNodedotjs, SiExpress, SiMongodb,
-  SiTypescript, SiDocker, SiGit, SiLinux,
-  SiNginx, SiPostman, SiJavascript, SiRedis,
+  FaArrowRight,
+  FaCode,
+  FaServer,
+  FaBolt,
+  FaUsers,
+} from "react-icons/fa";
+import {
+  SiReact,
+  SiNodedotjs,
+  SiExpress,
+  SiMongodb,
+  SiTypescript,
+  SiDocker,
+  SiGit,
+  SiLinux,
+  SiNginx,
+  SiPostman,
+  SiJavascript,
+  SiRedis,
 } from "react-icons/si";
 import "./About.css";
 
@@ -16,31 +31,43 @@ const stats = [
 ];
 
 const techStack = [
-  { icon: <SiReact />,      name: "React.js",   color: "#61dafb", tier: "MERN" },
-  { icon: <SiNodedotjs />,  name: "Node.js",    color: "#6cc24a", tier: "MERN" },
-  { icon: <SiExpress />,    name: "Express.js", color: "#cccccc", tier: "MERN" },
-  { icon: <SiMongodb />,    name: "MongoDB",    color: "#47a248", tier: "MERN" },
-  { icon: <SiTypescript />, name: "TypeScript", color: "#3178c6", tier: "MERN" },
-  { icon: <SiJavascript />, name: "JavaScript", color: "#f7df1e", tier: "MERN" },
-  { icon: <SiDocker />,     name: "Docker",     color: "#2496ed", tier: "DevOps" },
-  { icon: <SiLinux />,      name: "Linux",      color: "#ffd700", tier: "DevOps" },
-  { icon: <SiNginx />,      name: "Nginx",      color: "#009639", tier: "DevOps" },
-  { icon: <SiGit />,        name: "Git",        color: "#f05032", tier: "DevOps" },
-  { icon: <SiPostman />,    name: "Postman",    color: "#ff6c37", tier: "DevOps" },
-  { icon: <SiRedis />,       name: "Redis",      color: "#dc382d", tier: "MERN" },
+  { icon: <SiReact />, name: "React.js", color: "#61dafb", tier: "MERN" },
+  { icon: <SiNodedotjs />, name: "Node.js", color: "#6cc24a", tier: "MERN" },
+  { icon: <SiExpress />, name: "Express.js", color: "#cccccc", tier: "MERN" },
+  { icon: <SiMongodb />, name: "MongoDB", color: "#47a248", tier: "MERN" },
+  {
+    icon: <SiTypescript />,
+    name: "TypeScript",
+    color: "#3178c6",
+    tier: "MERN",
+  },
+  {
+    icon: <SiJavascript />,
+    name: "JavaScript",
+    color: "#f7df1e",
+    tier: "MERN",
+  },
+  { icon: <SiDocker />, name: "Docker", color: "#2496ed", tier: "DevOps" },
+  { icon: <SiLinux />, name: "Linux", color: "#ffd700", tier: "DevOps" },
+  { icon: <SiNginx />, name: "Nginx", color: "#009639", tier: "DevOps" },
+  { icon: <SiGit />, name: "Git", color: "#f05032", tier: "DevOps" },
+  { icon: <SiPostman />, name: "Postman", color: "#ff6c37", tier: "DevOps" },
+  { icon: <SiRedis />, name: "Redis", color: "#dc382d", tier: "MERN" },
 ];
 
 const skills = [
-  "React.js", "Node.js", "Express.js", "MongoDB",
-  "WebSocket", "TypeScript", "REST APIs", "Context API",
-  "Docker", "Linux", "Nginx", "Git",
-];
-
-const timeline = [
-  { year: "2022", label: "Started IT Degree", sub: "B.Sc. IT — Shivaji University" },
-  { year: "2023", label: "First MERN Project", sub: "Built full-stack apps with auth" },
-  { year: "2024", label: "Axelyne Internship", sub: "Live client work, 6 months" },
-  { year: "2025", label: "Going Deeper", sub: "DevOps, Docker, real-time systems" },
+  "React.js",
+  "Node.js",
+  "Express.js",
+  "MongoDB",
+  "WebSocket",
+  "TypeScript",
+  "REST APIs",
+  "Context API",
+  "Docker",
+  "Linux",
+  "Nginx",
+  "Git",
 ];
 
 const About = () => {
@@ -55,7 +82,6 @@ const About = () => {
       </Helmet>
 
       <section className="about section" id="about">
-
         {/* ── Floating particles ── */}
         <div className="about-particles" aria-hidden="true">
           {Array.from({ length: 14 }).map((_, i) => (
@@ -68,7 +94,6 @@ const About = () => {
         <div className="about-orb about-orb-2" aria-hidden="true" />
 
         <div className="container about__container">
-
           {/* ════ HERO HEADER ════ */}
           <div className="about__header">
             <span className="about__eyebrow animate-fade-in-up">
@@ -109,18 +134,17 @@ const About = () => {
 
           {/* ════ MAIN GRID ════ */}
           <div className="about__grid">
-
             {/* LEFT — bio + skills */}
             <div className="about__left">
               <div className="about__bio card card-red">
                 <span className="badge badge-red mb-2">Who I Am</span>
                 <h3>Full-Stack Web Developer</h3>
                 <p>
-                  MERN Stack Developer with hands-on experience building scalable
-                  frontend and backend web applications. Skilled in authentication
-                  systems, CRUD operations, REST APIs, Context API,
-                  real-time communication, responsive UI, and optimised backend
-                  architecture.
+                  MERN Stack Developer with hands-on experience building
+                  scalable frontend and backend web applications. Skilled in
+                  authentication systems, CRUD operations, REST APIs, Context
+                  API, real-time communication, responsive UI, and optimised
+                  backend architecture.
                 </p>
                 <p className="mt-2">
                   My goal is to build modern digital products and grow into a
@@ -205,7 +229,7 @@ const About = () => {
               <h2>Tech Stack</h2>
               <p className="mt-2">Tools &amp; technologies I work with daily</p>
             </div>
-
+              
             <div className="about__tech-tiers">
               {["MERN", "DevOps"].map((tier) => (
                 <div key={tier} className="about__tech-tier">
@@ -233,33 +257,6 @@ const About = () => {
               ))}
             </div>
           </div>
-
-          {/* ════ TIMELINE ════ */}
-          <div className="about__timeline-section">
-            <div className="section-title">
-              <h2>My Journey</h2>
-            </div>
-            <div className="about__timeline">
-              {timeline.map((item, i) => (
-                <div
-                  key={item.year}
-                  className="about__tl-item"
-                  style={{ animationDelay: `${i * 0.15}s` }}
-                >
-                  <div className="about__tl-line" />
-                  <div className="about__tl-dot">
-                    <span className="about__tl-dot-inner" />
-                  </div>
-                  <div className="about__tl-content card">
-                    <span className="about__tl-year">{item.year}</span>
-                    <h4>{item.label}</h4>
-                    <p>{item.sub}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
       </section>
     </>

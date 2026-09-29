@@ -1,25 +1,58 @@
 /* ================================================
-   HOME — GSAP Premium Hero  |  Home.css
+   HOME — Red Theme Hero  |  Home.css
    ================================================ */
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
 
 /* ── Layout ─────────────────────────────────── */
 .hero-section {
   position: relative;
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 100px 24px 60px;
-  /* will-change for ScrollTrigger scroll-scrub */
+  padding: 110px 24px 80px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
   will-change: opacity, transform;
 }
 
 .wave-canvas {
-  position: fixed;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* subtle grid background, fades out at edges */
+.hero-grid-bg {
+  position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    #000 20%,
+    transparent 75%
+  );
+  mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    #000 20%,
+    transparent 75%
+  );
 }
 
 /* ── Ambient Orbs ───────────────────────────── */
@@ -30,43 +63,46 @@
   pointer-events: none;
   z-index: 0;
 }
-
 .orb-1 {
-  width: 520px; height: 520px;
-  background: radial-gradient(circle, rgba(59,130,246,0.09) 0%, transparent 70%);
-  top: -160px; right: -120px;
+  width: min(520px, 80vw);
+  height: min(520px, 80vw);
+  background: radial-gradient(circle, rgba(225, 29, 72, 0.16) 0%, transparent 70%);
+  top: -160px;
+  right: -120px;
   animation: orbDrift 14s ease-in-out infinite;
 }
-
 .orb-2 {
-  width: 360px; height: 360px;
-  background: radial-gradient(circle, rgba(220,38,38,0.07) 0%, transparent 70%);
-  bottom: -90px; left: -90px;
+  width: min(380px, 70vw);
+  height: min(380px, 70vw);
+  background: radial-gradient(circle, rgba(159, 18, 57, 0.18) 0%, transparent 70%);
+  bottom: -90px;
+  left: -90px;
   animation: orbDrift 18s ease-in-out infinite reverse;
 }
-
 .orb-3 {
-  width: 240px; height: 240px;
-  background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
-  top: 40%; left: 28%;
+  width: min(260px, 50vw);
+  height: min(260px, 50vw);
+  background: radial-gradient(circle, rgba(251, 77, 109, 0.10) 0%, transparent 70%);
+  top: 40%;
+  left: 28%;
   animation: orbDrift 22s ease-in-out infinite 5s;
 }
-
 @keyframes orbDrift {
-  0%,100% { transform: translate(0,0) scale(1); }
-  33%     { transform: translate(28px,-18px) scale(1.04); }
-  66%     { transform: translate(-18px,28px) scale(0.96); }
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(28px, -18px) scale(1.04); }
+  66%      { transform: translate(-18px, 28px) scale(0.96); }
 }
 
 /* ── Main Container ─────────────────────────── */
 .hero-container {
+  min-width: 0;
   position: relative;
   z-index: 1;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
   gap: 80px;
 }
@@ -74,11 +110,9 @@
 /* ================================================
    LEFT — Content
    ================================================ */
-
-/* GSAP controls visibility — no CSS opacity/transform */
-.hero-left {
-  will-change: opacity, transform;
-}
+.hero-left { min-width: 0; max-width: 100%; }
+.hero-left > * { max-width: 100%; }
+.hero-summary, .hero-name { overflow-wrap: anywhere; }
 
 /* Status Badge */
 .status-badge {
@@ -86,8 +120,8 @@
   align-items: center;
   gap: 8px;
   padding: 7px 16px;
-  background: rgba(16,185,129,0.07);
-  border: 1px solid rgba(16,185,129,0.22);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
   border-radius: 999px;
   font-size: 0.82rem;
   font-family: "Sora", sans-serif;
@@ -96,18 +130,18 @@
   margin-bottom: 28px;
   will-change: opacity, transform;
 }
-
 .status-dot {
-  width: 7px; height: 7px;
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
   background: #10b981;
   border-radius: 50%;
   box-shadow: 0 0 8px #10b981;
-  animation: pulse 2.5s ease-in-out infinite;
+  animation: heroPulse 2.5s ease-in-out infinite;
 }
-
-@keyframes pulse {
-  0%,100% { opacity: 1; transform: scale(1); }
-  50%     { opacity: 0.55; transform: scale(0.9); }
+@keyframes heroPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.9); }
 }
 
 /* Name */
@@ -118,28 +152,35 @@
   font-weight: 700;
   line-height: 1.05;
   margin-bottom: 18px;
+  /* override global h1 gradient so per-line styling works */
+  background: none;
+  -webkit-text-fill-color: initial;
+  letter-spacing: -0.02em;
 }
-
 .name-line {
-  font-size: clamp(3rem, 5.5vw, 4.8rem);
-  color: #f1f5f9;
+  font-size: clamp(2.5rem, 7vw, 4.8rem);
+  color: #f8f0f2;
   display: block;
   will-change: opacity, transform;
 }
-
 .name-line-2 {
-  background: linear-gradient(120deg, #3b82f6 0%, #818cf8 50%, #dc2626 100%);
+  background: linear-gradient(
+    120deg,
+    #f8f0f2 0%,
+    #fb4d6d 35%,
+    #e11d48 65%,
+    #9f1239 100%
+  );
+  background-size: 220% 100%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  background-size: 200%;
-  animation: gradShift 5s linear infinite;
+  animation: gradShift 6s ease-in-out infinite;
+  padding-bottom: 0.06em;
 }
-
 @keyframes gradShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
 }
 
 /* Role */
@@ -151,17 +192,26 @@
   flex-wrap: wrap;
   will-change: opacity, transform;
 }
-
-.role-text    { font-family: "Sora", sans-serif; font-size: 1.15rem; color: #60a5fa; font-weight: 500; }
-.role-divider { color: #2d3748; font-size: 1.2rem; }
-.role-sub     { font-family: "Sora", sans-serif; font-size: 1rem;    color: #f87171; font-weight: 400; }
+.role-text {
+  font-family: "Sora", sans-serif;
+  font-size: clamp(1rem, 2.6vw, 1.15rem);
+  color: var(--primary-light, #fb4d6d);
+  font-weight: 500;
+}
+.role-divider { color: #6e5560; font-size: 1.2rem; }
+.role-sub {
+  font-family: "Sora", sans-serif;
+  font-size: clamp(0.9rem, 2.4vw, 1rem);
+  color: #b0929a;
+  font-weight: 400;
+}
 
 /* Summary */
 .hero-summary {
-  font-size: 1rem;
-  color: #94a3b8;
+  font-size: clamp(0.95rem, 2.2vw, 1.02rem);
+  color: #b0929a;
   line-height: 1.8;
-  max-width: 500px;
+  max-width: 520px;
   margin-bottom: 36px;
   will-change: opacity, transform, filter;
 }
@@ -173,12 +223,12 @@
   gap: 12px;
   margin-bottom: 36px;
 }
-
 .cta-primary,
 .cta-accent,
 .cta-ghost {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
   padding: 13px 26px;
   font-family: "Sora", sans-serif;
@@ -187,160 +237,204 @@
   border-radius: 999px;
   text-decoration: none;
   cursor: pointer;
-  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1),
-              box-shadow 0.3s cubic-bezier(0.4,0,0.2,1);
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.3s, border-color 0.3s, color 0.3s;
   position: relative;
   overflow: hidden;
   border: none;
   will-change: opacity, transform;
   isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
 }
-
-/* Shimmer */
-.cta-primary::before, .cta-accent::before {
+.cta-primary::before,
+.cta-accent::before {
   content: "";
   position: absolute;
-  top: 0; left: -120%; width: 80%; height: 100%;
-  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,0.2) 50%, transparent 80%);
-  transition: left 0.55s cubic-bezier(0.4,0,0.2,1);
+  top: 0;
+  left: -120%;
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.2) 50%, transparent 80%);
+  transition: left 0.55s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
-.cta-primary:hover::before, .cta-accent:hover::before { left: 140%; }
+.cta-primary:hover::before,
+.cta-accent:hover::before { left: 140%; }
 
 .cta-primary {
-  background: linear-gradient(135deg, #2563eb, #3b82f6, #60a5fa);
-  color: white;
-  box-shadow: 0 4px 22px rgba(59,130,246,0.35),
-              inset 0 1px 0 rgba(255,255,255,0.15);
+  background: linear-gradient(135deg, #be123c, #e11d48, #fb4d6d);
+  color: #fff;
+  box-shadow: 0 4px 22px rgba(225, 29, 72, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 .cta-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(59,130,246,0.48);
+  box-shadow: 0 12px 40px rgba(225, 29, 72, 0.52);
+  color: #fff;
 }
 
 .cta-accent {
-  background: linear-gradient(135deg, #b91c1c, #dc2626, #f87171);
-  color: white;
-  box-shadow: 0 4px 22px rgba(220,38,38,0.28),
-              inset 0 1px 0 rgba(255,255,255,0.12);
+  background: linear-gradient(135deg, #7f1d1d, #9f1239, #be123c);
+  color: #ffdde4;
+  box-shadow: 0 4px 22px rgba(159, 18, 57, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 .cta-accent:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(220,38,38,0.42);
+  box-shadow: 0 12px 40px rgba(159, 18, 57, 0.48);
+  color: #fff;
 }
 
 .cta-ghost {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.09);
-  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(225, 29, 72, 0.25);
+  color: #b0929a;
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .cta-ghost:hover {
-  border-color: rgba(59,130,246,0.35);
-  color: #60a5fa;
-  background: rgba(59,130,246,0.07);
+  border-color: rgba(225, 29, 72, 0.5);
+  color: var(--primary-light, #fb4d6d);
+  background: rgba(225, 29, 72, 0.08);
   transform: translateY(-3px);
 }
 
 /* Social */
 .social-row {
   display: flex;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 12px;
   padding-top: 24px;
-  border-top: 1px solid rgba(255,255,255,0.055);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   will-change: opacity, transform;
 }
-
 .social-link {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #64748b;
+  color: #8a6f78;
   text-decoration: none;
   font-size: 0.9rem;
   font-family: "Sora", sans-serif;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.3s ease;
 }
 .social-link:hover {
-  color: #f1f5f9;
-  border-color: rgba(99,102,241,0.38);
-  background: rgba(99,102,241,0.09);
+  color: #fff;
+  border-color: rgba(225, 29, 72, 0.4);
+  background: rgba(225, 29, 72, 0.10);
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.18);
 }
 
 /* ================================================
    RIGHT — Profile Card
    ================================================ */
-
 .hero-right {
+  --card-w: 360px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
+  min-width: 0;
 }
 
-/* The Card — GSAP drives opacity/scale/transform  */
+/* stage = card + chips, so chips always hug the card */
+.card-stage {
+  position: relative;
+  width: var(--card-w);
+  max-width: 100%;
+}
+
+/* CSS float lives here, GSAP tilt/scroll lives on .profile-card */
+.card-float {
+  animation: floatCard 6s ease-in-out infinite;
+}
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
 .profile-card {
   position: relative;
-  width: 360px;
+  width: 100%;
   border-radius: 28px;
-  background: rgba(7, 10, 22, 0.78);
+  background: rgba(14, 3, 6, 0.80);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   box-shadow:
-    0 0 0 1px rgba(59,130,246,0.1),
-    0 30px 80px rgba(0,0,0,0.55),
-    inset 0 1px 0 rgba(255,255,255,0.05);
-  padding: 32px 28px 80px;
+    0 0 0 1px rgba(225, 29, 72, 0.12),
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  padding: 28px 26px 84px;
   overflow: visible;
-  /* Float animation continues — GSAP tilt is additive */
-  animation: floatCard 6s ease-in-out infinite;
   will-change: transform, box-shadow;
   transform-style: preserve-3d;
 }
 
-/* Top edge highlight */
+/* top edge highlight */
 .profile-card::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: 0; left: 15%; width: 70%; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.09), transparent);
+  top: 0;
+  left: 15%;
+  width: 70%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
   pointer-events: none;
-  border-radius: 999px;
 }
 
-@keyframes floatCard {
-  0%,100% { transform: translateY(0px); }
-  50%     { transform: translateY(-10px); }
+/* rotating glowing border */
+.profile-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 29px;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 0%,
+    transparent 62%,
+    rgba(225, 29, 72, 0.9) 82%,
+    rgba(251, 77, 109, 0.9) 90%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: spinAngle 6s linear infinite;
+  pointer-events: none;
+}
+@keyframes spinAngle {
+  to { --angle: 360deg; }
 }
 
-/* Decorative rings — GSAP handles opacity/scale */
+/* Decorative rings — sized relative to the card, always centered */
 .ring {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  aspect-ratio: 1;
   border-radius: 50%;
-  border: 1px solid rgba(59,130,246,0.12);
+  border: 1px solid rgba(225, 29, 72, 0.18);
   pointer-events: none;
+  z-index: -1;
   will-change: opacity, transform;
-  /* CSS ring pulse (subtle — GSAP overrides on hover) */
-  animation: ringPulse 4.5s ease-in-out infinite;
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%); /* base; GSAP uses scale from this */
 }
-
-.ring-1 { width: 420px; height: 420px; }
+.ring-1 { width: 122%; margin: -61% 0 0 -61%; }
 .ring-2 {
-  width: 500px; height: 500px;
-  border-color: rgba(220,38,38,0.07);
-  animation-delay: -2.2s;
-}
-
-@keyframes ringPulse {
-  0%,100% { opacity: 0.38; }
-  50%     { opacity: 0.6; }
+  width: 148%;
+  margin: -74% 0 0 -74%;
+  border-color: rgba(159, 18, 57, 0.14);
+  border-style: dashed;
 }
 
 /* Profile Image */
@@ -350,36 +444,26 @@
   aspect-ratio: 1;
   border-radius: 18px;
   overflow: hidden;
-  background: rgba(12,18,40,0.85);
+  background: rgba(30, 6, 12, 0.85);
   cursor: pointer;
 }
-
 .profile-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  /* GSAP controls scale on hover — no CSS transition needed here */
   will-change: transform;
 }
-
-/* Shine overlay */
 .img-shine {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    transparent 30%,
-    rgba(255,255,255,0.12) 50%,
-    transparent 70%
-  );
+  background: linear-gradient(135deg, transparent 30%, rgba(255, 255, 255, 0.14) 50%, transparent 70%);
   background-size: 220% 220%;
   opacity: 0.18;
   animation: shineMove 5s linear infinite;
   pointer-events: none;
   will-change: opacity;
 }
-
 @keyframes shineMove {
   0%   { background-position: 200% 200%; }
   100% { background-position: -200% -200%; }
@@ -388,7 +472,9 @@
 /* Card name / tag */
 .card-info {
   position: absolute;
-  bottom: 24px; left: 28px; right: 28px;
+  bottom: 22px;
+  left: 26px;
+  right: 26px;
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -397,75 +483,77 @@
   font-family: "Sora", sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: #f8f0f2;
 }
 .card-tag {
   font-size: 0.82rem;
-  color: #60a5fa;
+  color: var(--primary-light, #fb4d6d);
   font-family: "Sora", sans-serif;
 }
 
 /* Corner glows */
 .corner-glow {
   position: absolute;
-  width: 60px; height: 60px;
+  width: 60px;
+  height: 60px;
   pointer-events: none;
 }
 .corner-glow.tl {
-  top: -1px; left: -1px;
-  background: linear-gradient(135deg, rgba(59,130,246,0.55), transparent);
+  top: -1px;
+  left: -1px;
+  background: linear-gradient(135deg, rgba(251, 77, 109, 0.5), transparent);
   border-radius: 28px 2px 2px 2px;
   opacity: 0.5;
 }
 .corner-glow.br {
-  bottom: -1px; right: -1px;
-  background: linear-gradient(315deg, rgba(220,38,38,0.45), transparent);
+  bottom: -1px;
+  right: -1px;
+  background: linear-gradient(315deg, rgba(159, 18, 57, 0.6), transparent);
   border-radius: 2px 2px 28px 2px;
-  opacity: 0.38;
+  opacity: 0.5;
 }
 
-/* Floating Stat Chips — GSAP handles enter animation & tilt offset */
+/* Floating Stat Chips — outer = GSAP, inner = CSS float */
 .stat-chip {
   position: absolute;
+  z-index: 3;
+  will-change: transform, opacity;
+}
+.stat-chip-1 { top: 6%; right: -7%; }
+.stat-chip-2 { bottom: 12%; left: -9%; }
+
+.stat-chip-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 12px 18px;
-  background: rgba(6, 9, 20, 0.88);
-  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(12, 2, 5, 0.90);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 16px;
   backdrop-filter: blur(14px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-  /* CSS float continues; GSAP x/y is additive */
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(225, 29, 72, 0.08);
   animation: floatStat 5s ease-in-out infinite;
-  will-change: transform, opacity;
 }
-.stat-chip-1 {
-  top: 6%; right: -18px;
-  animation-delay: -1.5s;
-  border-color: rgba(59,130,246,0.22);
-}
-.stat-chip-2 {
-  bottom: 12%; left: -22px;
-  animation-delay: -3s;
-  border-color: rgba(220,38,38,0.18);
-}
+.stat-chip-1 .stat-chip-inner { border-color: rgba(225, 29, 72, 0.3); animation-delay: -1.5s; }
+.stat-chip-2 .stat-chip-inner { border-color: rgba(159, 18, 57, 0.35); animation-delay: -3s; }
+
 @keyframes floatStat {
-  0%,100% { transform: translateY(0); }
-  50%     { transform: translateY(-9px); }
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-9px); }
 }
 
 .stat-num {
   font-family: "Sora", sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #f8f0f2;
   line-height: 1;
 }
 .stat-label {
   font-size: 0.7rem;
-  color: #64748b;
-  margin-top: 3px;
+  color: #8a6f78;
+  margin-top: 4px;
   font-family: "Sora", sans-serif;
   white-space: nowrap;
 }
@@ -473,62 +561,134 @@
 /* ── Scroll hint ────────────────────────── */
 .scroll-hint {
   position: absolute;
-  bottom: 24px; left: 50%;
+  bottom: 20px;
+  left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
   z-index: 2;
-  opacity: 0.35;
+  opacity: 0.4;
   transition: opacity 0.3s;
+  text-decoration: none;
 }
-.scroll-hint:hover { opacity: 0.75; }
-
+.scroll-hint:hover { opacity: 0.85; }
 .scroll-line {
-  width: 1px; height: 40px;
-  background: linear-gradient(to bottom, transparent, #3b82f6, transparent);
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(to bottom, transparent, #e11d48, transparent);
   animation: scrollBounce 2s ease-in-out infinite;
 }
 .scroll-hint span {
   font-size: 0.63rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #64748b;
+  color: #8a6f78;
   font-family: "Sora", sans-serif;
+  white-space: nowrap;
 }
 @keyframes scrollBounce {
-  0%,100% { transform: scaleY(1); }
-  50%     { transform: scaleY(1.35); }
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(1.35); }
 }
 
 /* ================================================
    RESPONSIVE
    ================================================ */
-@media (max-width: 1024px) {
-  .hero-container {
-    grid-template-columns: 1fr;
-    gap: 60px;
-    text-align: center;
-  }
-  .hero-right { order: -1; }
-  .hero-role, .social-row, .hero-cta { justify-content: center; }
-  .hero-summary { margin-inline: auto; }
-  .profile-card { width: 300px; }
-  .stat-chip-1 { right: 0; }
-  .stat-chip-2 { left:  0; }
+
+/* Laptop / small desktop */
+@media (max-width: 1200px) {
+  .hero-container { gap: 56px; }
+  .hero-right { --card-w: 330px; }
 }
 
-@media (max-width: 600px) {
-  .hero-section { padding: 90px 16px 80px; }
-  .name-line { font-size: 2.6rem; }
-  .hero-cta { flex-direction: column; align-items: center; }
-  .cta-primary, .cta-accent, .cta-ghost {
-    width: 100%;
-    justify-content: center;
-    max-width: 280px;
+/* Tablet + below: single column, centered */
+@media (max-width: 1024px) {
+  .hero-section { padding: 110px 24px 90px; }
+  .hero-container {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 56px;
+    text-align: center;
   }
-  .profile-card { width: 260px; }
-  .ring-1 { width: 320px; height: 320px; }
-  .ring-2 { width: 390px; height: 390px; }
+  .hero-right { order: -1; --card-w: min(320px, 78vw); }
+  .hero-role,
+  .social-row,
+  .hero-cta { justify-content: center; }
+  .hero-summary { margin-inline: auto; }
+  .status-badge { margin-bottom: 22px; }
+  .stat-chip-1 { right: -10%; }
+  .stat-chip-2 { left: -12%; }
+}
+
+/* Phones */
+@media (max-width: 600px) {
+  .hero-section { padding: 96px 16px 84px; }
+  .hero-container { gap: 44px; }
+  .hero-right { --card-w: min(280px, 72vw); }
+
+  .profile-card { padding: 20px 18px 74px; border-radius: 24px; }
+  .profile-card::after { border-radius: 25px; }
+  .card-info { left: 18px; right: 18px; bottom: 18px; }
+  .card-name { font-size: 0.98rem; }
+
+  .stat-chip-1 { top: 4%; right: -14%; }
+  .stat-chip-2 { bottom: 10%; left: -14%; }
+  .stat-chip-inner { padding: 9px 13px; border-radius: 14px; }
+  .stat-num { font-size: 1.15rem; }
+  .stat-label { font-size: 0.62rem; }
+
+  .status-badge { font-size: 0.76rem; padding: 6px 14px; }
+
+  .hero-cta {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    max-width: 320px;
+    margin-inline: auto;
+    margin-bottom: 28px;
+  }
+  .cta-primary,
+  .cta-accent,
+  .cta-ghost { width: 100%; padding: 14px 20px; }
+
+  .social-row { padding-top: 20px; }
+  .social-link { flex: 1; justify-content: center; min-width: 120px; }
+
+  .scroll-hint { display: none; }
+}
+
+/* Very small phones (≤380px) */
+@media (max-width: 380px) {
+  .hero-section { padding: 88px 14px 70px; }
+  .hero-right { --card-w: min(240px, 68vw); }
+  .name-line { font-size: 2.2rem; }
+  .stat-chip-1 { right: -10%; }
+  .stat-chip-2 { left: -10%; }
+  .role-divider { display: none; }
+}
+
+/* Short landscape screens (phones rotated) */
+@media (max-height: 560px) and (orientation: landscape) {
+  .hero-section { min-height: auto; padding: 90px 24px 60px; }
+  .scroll-hint { display: none; }
+}
+
+/* Touch devices: no hover states stuck, keep it light */
+@media (hover: none) {
+  .cta-primary:hover,
+  .cta-accent:hover,
+  .cta-ghost:hover,
+  .social-link:hover { transform: none; }
+}
+
+/* Respect reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .card-float,
+  .stat-chip-inner,
+  .orb,
+  .name-line-2,
+  .profile-card::after,
+  .img-shine,
+  .scroll-line { animation: none; }
 }

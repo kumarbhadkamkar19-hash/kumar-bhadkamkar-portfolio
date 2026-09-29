@@ -24,49 +24,85 @@ function Home() {
   const statChip2Ref = useRef(null);
   const profileImgRef = useRef(null);
   const imgShineRef = useRef(null);
-  const mousePos = useRef({ x: 0, y: 0 });
-  const animFrameRef = useRef(null);
 
-  /* ── Canvas: particles + ripple ──────── */
+  /* ── Canvas: particles + ripple (section-scoped, DPR aware) ── */
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const section = sectionRef.current;
+    if (!canvas || !section) return;
     const ctx = canvas.getContext("2d");
 
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener("resize", resize);
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-    const onMouseMove = (e) => {
-      mousePos.current = { x: e.clientX, y: e.clientY };
-    };
-    window.addEventListener("mousemove", onMouseMove);
-
-    const points = Array.from({ length: 75 }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      vx: (Math.random() - 0.5) * 0.35,
-      vy: (Math.random() - 0.5) * 0.35,
-      size: Math.random() * 1.8 + 0.4,
-      opacity: Math.random() * 0.28 + 0.07,
-    }));
-
-    let ripples = [],
-      lastMouse = { x: 0, y: 0 },
+    let w = 0,
+      h = 0,
+      points = [],
+      ripples = [],
+      raf = null,
+      visible = true,
       frame = 0;
+    const mouse = { x: -1000, y: -1000 };
+    let lastMouse = { x: -1000, y: -1000 };
 
-    const draw = () => {
+    const init = () => {
+      w = section.clientWidth;
+      h = section.clientHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // fewer particles on small screens = smooth on phones
+      const count = Math.min(75, Math.max(22, Math.floor((w * h) / 16000)));
+      points = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        size: Math.random() * 1.8 + 0.4,
+        opacity: Math.random() * 0.28 + 0.07,
+      }));
+    };
+    init();
+
+    const ro = new ResizeObserver(init);
+    ro.observe(section);
+
+    const onPointerMove = (e) => {
+      const rect = section.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    };
+    const onPointerLeave = () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    };
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("pointerup", onPointerLeave, { passive: true });
+    document.addEventListener("mouseleave", onPointerLeave);
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible && !raf && !reduceMotion) raf = requestAnimationFrame(draw);
+      },
+      { threshold: 0 },
+    );
+    io.observe(section);
+
+    const drawFrame = () => {
       frame++;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const mx = mousePos.current.x,
-        my = mousePos.current.y;
-      const dx = mx - lastMouse.x,
-        dy = my - lastMouse.y;
+      ctx.clearRect(0, 0, w, h);
+      const mx = mouse.x,
+        my = mouse.y;
 
-      if (Math.sqrt(dx * dx + dy * dy) > 8 && frame % 4 === 0) {
+      if (
+        Math.hypot(mx - lastMouse.x, my - lastMouse.y) > 8 &&
+        frame % 4 === 0 &&
+        mx > -500
+      ) {
         ripples.push({ x: mx, y: my, r: 0, alpha: 0.42 });
         lastMouse = { x: mx, y: my };
       }
@@ -83,25 +119,26 @@ function Home() {
           rip.y,
           rip.r,
         );
-        g.addColorStop(0, `rgba(59,130,246,0)`);
-        g.addColorStop(0.6, `rgba(59,130,246,${rip.alpha * 0.22})`);
-        g.addColorStop(1, `rgba(59,130,246,0)`);
+        g.addColorStop(0, "rgba(225,29,72,0)");
+        g.addColorStop(0.6, `rgba(225,29,72,${rip.alpha * 0.22})`);
+        g.addColorStop(1, "rgba(225,29,72,0)");
         ctx.beginPath();
         ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
         ctx.fillStyle = g;
         ctx.fill();
         ctx.beginPath();
         ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(59,130,246,${rip.alpha * 0.45})`;
+        ctx.strokeStyle = `rgba(251,77,109,${rip.alpha * 0.45})`;
         ctx.lineWidth = 0.8;
         ctx.stroke();
       });
 
-      points.forEach((p) => {
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
         p.x += p.vx;
         p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
 
         const dm = Math.hypot(p.x - mx, p.y - my);
         if (dm < 150) {
@@ -109,42 +146,56 @@ function Home() {
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
           ctx.lineTo(mx, my);
-          ctx.strokeStyle = `rgba(59,130,246,${str * 0.18})`;
+          ctx.strokeStyle = `rgba(251,77,109,${str * 0.2})`;
           ctx.lineWidth = str * 1.1;
           ctx.stroke();
         }
-        points.forEach((p2) => {
+        for (let j = i + 1; j < points.length; j++) {
+          const p2 = points[j];
           const d = Math.hypot(p.x - p2.x, p.y - p2.y);
           if (d < 90) {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(99,102,241,${(1 - d / 90) * 0.07})`;
+            ctx.strokeStyle = `rgba(190,18,60,${(1 - d / 90) * 0.12})`;
             ctx.lineWidth = 0.4;
             ctx.stroke();
           }
-        });
+        }
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(99,102,241,${p.opacity})`;
+        ctx.fillStyle = `rgba(251,77,109,${p.opacity})`;
         ctx.fill();
-      });
-
-      animFrameRef.current = requestAnimationFrame(draw);
+      }
     };
-    draw();
+
+    function draw() {
+      if (!visible) {
+        raf = null;
+        return;
+      }
+      drawFrame();
+      raf = requestAnimationFrame(draw);
+    }
+
+    if (reduceMotion) drawFrame();
+    else raf = requestAnimationFrame(draw);
 
     return () => {
-      cancelAnimationFrame(animFrameRef.current);
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", onMouseMove);
+      if (raf) cancelAnimationFrame(raf);
+      ro.disconnect();
+      io.disconnect();
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerLeave);
+      document.removeEventListener("mouseleave", onPointerLeave);
     };
   }, []);
 
   /* ── GSAP: On-load master timeline ──── */
   useEffect(() => {
+    const mm = gsap.matchMedia();
+
     const ctx = gsap.context(() => {
-      // ── Initial hidden states ──
       gsap.set(
         [
           badgeRef.current,
@@ -157,11 +208,8 @@ function Home() {
         { opacity: 0, y: 45 },
       );
 
-      gsap.set(gsap.utils.toArray(ctaRef.current?.children ?? []), {
-        opacity: 0,
-        y: 22,
-        scale: 0.88,
-      });
+      const ctaItems = gsap.utils.toArray(ctaRef.current?.children ?? []);
+      gsap.set(ctaItems, { opacity: 0, y: 22, scale: 0.88 });
 
       gsap.set(cardRef.current, { opacity: 0, scale: 0.88, y: 35 });
       gsap.set(ring1Ref.current, { opacity: 0, scale: 0.65 });
@@ -169,7 +217,6 @@ function Home() {
       gsap.set(statChip1Ref.current, { opacity: 0, scale: 0.45, x: 24 });
       gsap.set(statChip2Ref.current, { opacity: 0, scale: 0.45, x: -24 });
 
-      // ── Master TL ──
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
       tl.to(badgeRef.current, { opacity: 1, y: 0, duration: 0.7 }, 0.15)
@@ -183,7 +230,7 @@ function Home() {
           0.88,
         )
         .to(
-          gsap.utils.toArray(ctaRef.current?.children ?? []),
+          ctaItems,
           {
             opacity: 1,
             y: 0,
@@ -195,13 +242,11 @@ function Home() {
           1.08,
         )
         .to(socialRef.current, { opacity: 1, y: 0, duration: 0.6 }, 1.38)
-        // Card
         .to(
           cardRef.current,
           { opacity: 1, scale: 1, y: 0, duration: 1.1, ease: "power4.out" },
           0.42,
         )
-        // Rings — elastic pop
         .to(
           ring1Ref.current,
           {
@@ -222,7 +267,6 @@ function Home() {
           },
           0.82,
         )
-        // Stat chips — bounce
         .to(
           statChip1Ref.current,
           { opacity: 1, scale: 1, x: 0, duration: 0.75, ease: "back.out(2.2)" },
@@ -234,41 +278,48 @@ function Home() {
           1.28,
         );
 
-      // ── ScrollTrigger: hero fades on scroll ──
-      gsap.to(sectionRef.current, {
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-        opacity: 0.25,
-        scale: 0.97,
-        ease: "none",
-      });
+      // Scroll-scrub effects — desktop only (keeps phones smooth & content readable)
+      mm.add("(min-width: 1025px)", () => {
+        gsap.to(sectionRef.current, {
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+          opacity: 0.25,
+          scale: 0.97,
+          ease: "none",
+        });
 
-      gsap.to(cardRef.current, {
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "55% top",
-          scrub: true,
-        },
-        scale: 0.92,
-        y: 40,
-        ease: "none",
+        gsap.to(cardRef.current, {
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "55% top",
+            scrub: true,
+          },
+          scale: 0.92,
+          y: 40,
+          ease: "none",
+        });
       });
     }, sectionRef);
 
-    return () => ctx.revert();
+    return () => {
+      mm.revert();
+      ctx.revert();
+    };
   }, []);
 
-  /* ── GSAP: Card mouse tilt ────────────── */
+  /* ── GSAP: Card mouse tilt (mouse devices only) ── */
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
-    let bounds;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
+      return;
 
+    let bounds;
     const onEnter = () => {
       bounds = card.getBoundingClientRect();
     };
@@ -287,7 +338,6 @@ function Home() {
         transformPerspective: 900,
       });
 
-      // Rings react to distance
       const dist = Math.sqrt(dx * dx + dy * dy);
       gsap.to([ring1Ref.current, ring2Ref.current], {
         scale: 1 + dist * 0.045,
@@ -296,7 +346,6 @@ function Home() {
         ease: "power2.out",
       });
 
-      // Stat chips drift with mouse
       gsap.to(statChip1Ref.current, {
         x: dx * 9,
         y: dy * 7,
@@ -348,6 +397,8 @@ function Home() {
     const shine = imgShineRef.current;
     const card = cardRef.current;
     if (!wrap || !shine || !card) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
+      return;
 
     const img = wrap.querySelector("img");
 
@@ -356,7 +407,7 @@ function Home() {
       gsap.to(shine, { opacity: 0.65, duration: 0.4, ease: "power2.out" });
       gsap.to(card, {
         boxShadow:
-          "0 0 0 1px rgba(59,130,246,0.4), 0 50px 120px rgba(0,0,0,0.75), 0 0 90px rgba(59,130,246,0.2)",
+          "0 0 0 1px rgba(225,29,72,0.45), 0 50px 120px rgba(0,0,0,0.75), 0 0 90px rgba(225,29,72,0.25)",
         duration: 0.4,
         ease: "power2.out",
       });
@@ -366,7 +417,7 @@ function Home() {
       gsap.to(shine, { opacity: 0.18, duration: 0.5, ease: "power2.out" });
       gsap.to(card, {
         boxShadow:
-          "0 0 0 1px rgba(59,130,246,0.1), 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
+          "0 0 0 1px rgba(225,29,72,0.12), 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
         duration: 0.5,
         ease: "power2.out",
       });
@@ -382,9 +433,10 @@ function Home() {
 
   /* ── JSX ─────────────────────────────── */
   return (
-    <section className="hero-section" ref={sectionRef}>
+    <section className="hero-section" id="home" ref={sectionRef}>
       <canvas ref={canvasRef} className="wave-canvas" />
 
+      <div className="hero-grid-bg" />
       <div className="orb orb-1" />
       <div className="orb orb-2" />
       <div className="orb orb-3" />
@@ -394,11 +446,11 @@ function Home() {
         <div className="hero-left">
           <div className="status-badge" ref={badgeRef}>
             <span className="status-dot" />
-            <span>Available for Projects</span>
+            <span>Available for Opportunities</span>
           </div>
 
           <h1 className="hero-name">
-            <span className="name-line name-line-2  " ref={nameLine1Ref}>
+            <span className="name-line name-line-2" ref={nameLine1Ref}>
               Kumar
             </span>
             <span className="name-line name-line-2" ref={nameLine2Ref}>
@@ -407,15 +459,15 @@ function Home() {
           </h1>
 
           <div className="hero-role" ref={roleRef}>
-            <span className="role-text">MERN Stack Developer</span>
+            <span className="role-text">Full Stack Developer</span>
             <span className="role-divider">·</span>
-            <span className="role-sub">Future Startup Founder</span>
+            <span className="role-sub">Backend &amp; AI/LLM</span>
           </div>
 
           <p className="hero-summary" ref={summaryRef}>
-            Building scalable, modern web applications with React.js, Node.js,
-            Express.js &amp; MongoDB — clean UI, real‑time features, and
-            bulletproof auth systems.
+            MERN Stack Developer building secure, scalable web applications and
+            REST APIs with React.js, Node.js, Express.js & MongoDB — focused on
+            clean architecture, authentication, and AI/LLM integration.
           </p>
 
           <div className="hero-cta" ref={ctaRef}>
@@ -426,7 +478,7 @@ function Home() {
               Contact Me
             </a>
             <a href="/resume.pdf" className="cta-ghost" download>
-              <FiDownload /> Resume
+              <FiDownload /> Download Resume
             </a>
           </div>
 
@@ -436,61 +488,71 @@ function Home() {
               target="_blank"
               rel="noopener noreferrer"
               className="social-link"
+              aria-label="GitHub"
             >
-              <FiGithub />
-              <span>GitHub</span>
+              <FiGithub /> GitHub
             </a>
             <a
               href="https://www.linkedin.com/in/kumar-bhadkamkar/"
               target="_blank"
               rel="noopener noreferrer"
               className="social-link"
+              aria-label="LinkedIn"
             >
-              <FiLinkedin />
-              <span>LinkedIn</span>
+              <FiLinkedin /> LinkedIn
             </a>
           </div>
         </div>
 
         {/* RIGHT */}
         <div className="hero-right">
-          <div className="profile-card" ref={cardRef}>
-            <div className="ring ring-1" ref={ring1Ref} />
-            <div className="ring ring-2" ref={ring2Ref} />
+          <div className="card-stage">
+            {/* float wrapper so CSS float never fights GSAP tilt */}
+            <div className="card-float">
+              <div className="profile-card" ref={cardRef}>
+                <div className="ring ring-1" ref={ring1Ref} />
+                <div className="ring ring-2" ref={ring2Ref} />
 
-            <div className="profile-img-wrap" ref={profileImgRef}>
-              <img
-                src={profile}
-                alt="Kumar Bhadkamkar"
-                className="profile-img"
-              />
-              <div className="img-shine" ref={imgShineRef} />
+                <div className="profile-img-wrap" ref={profileImgRef}>
+                  <img
+                    src={profile}
+                    alt="Kumar Bhadkamkar"
+                    className="profile-img"
+                  />
+                  <div className="img-shine" ref={imgShineRef} />
+                </div>
+
+                <div className="card-info">
+                  <span className="card-name">Kumar Bhadkamkar</span>
+                  <span className="card-tag">MERN Developer</span>
+                </div>
+
+                <div className="corner-glow tl" />
+                <div className="corner-glow br" />
+              </div>
             </div>
 
-            <div className="card-info">
-              <span className="card-name">Kumar Bhadkamkar</span>
-              <span className="card-tag">MERN Developer</span>
+            <div className="stat-chip stat-chip-1" ref={statChip1Ref}>
+              <div className="stat-chip-inner">
+                <span className="stat-num">6+</span>
+                <span className="stat-label">Months Experience</span>
+              </div>
             </div>
 
-            <div className="corner-glow tl" />
-            <div className="corner-glow br" />
-          </div>
-
-          <div className="stat-chip stat-chip-1" ref={statChip1Ref}>
-            <span className="stat-num">6 Mo</span>
-            <span className="stat-label">Experience</span>
-          </div>
-          <div className="stat-chip stat-chip-2" ref={statChip2Ref}>
-            <span className="stat-num">8+</span>
-            <span className="stat-label">Projects</span>
+            <div className="stat-chip stat-chip-2" ref={statChip2Ref}>
+              <div className="stat-chip-inner">
+                <span className="stat-num">4+</span>
+                <span className="stat-label">Deployed Projects</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="scroll-hint">
+      <a href="#about" className="scroll-hint" aria-label="Scroll to About">
         <div className="scroll-line" />
-        <span>scroll</span>
-      </div>
+        <span>Scroll to explore ↓</span>
+      </a>
     </section>
   );
 }
