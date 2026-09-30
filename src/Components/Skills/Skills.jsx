@@ -173,12 +173,12 @@ const categories = [
   },
 ];
 
-const learningBadges = [
-  "Backend Development",
-  "AI / LLM",
-  "DevOps",
-  "React Native",
-];
+// const learningBadges = [
+//   "Backend Development",
+//   "AI / LLM",
+//   "DevOps",
+//   "React Native",
+// ];
 
 /* ================================================
    HOOK — one gentle reveal per block
