@@ -1,0 +1,51 @@
+
+const techStack = [
+  { icon: <SiReact />, name: "React.js", color: "#61dafb", tier: "MERN" },
+  { icon: <SiNodedotjs />, name: "Node.js", color: "#6cc24a", tier: "MERN" },
+  { icon: <SiExpress />, name: "Express.js", color: "#cccccc", tier: "MERN" },
+  { icon: <SiMongodb />, name: "MongoDB", color: "#47a248", tier: "MERN" },
+  {
+    icon: <SiTypescript />,
+    name: "TypeScript",
+    color: "#3178c6",
+    tier: "MERN",
+  },
+  {
+    icon: <SiJavascript />,
+    name: "JavaScript",
+    color: "#f7df1e",
+    tier: "MERN",
+  },
+  { icon: <SiDocker />, name: "Docker", color: "#2496ed", tier: "DevOps" },
+  { icon: <SiLinux />, name: "Linux", color: "#ffd700", tier: "DevOps" },
+  { icon: <SiNginx />, name: "Nginx", color: "#009639", tier: "DevOps" },
+  { icon: <SiGit />, name: "Git", color: "#f05032", tier: "DevOps" },
+  { icon: <SiPostman />, name: "Postman", color: "#ff6c37", tier: "DevOps" },
+  { icon: <SiRedis />, name: "Redis", color: "#dc382d", tier: "MERN" },
+];
+ <div className="about__tech-tiers">
+              {["MERN", "DevOps"].map((tier) => (
+                <div key={tier} className="about__tech-tier">
+                  <span className="about__tier-badge">{tier}</span>
+                  <div className="about__tech-grid">
+                    {techStack
+                      .filter((t) => t.tier === tier)
+                      .map((t, i) => (
+                        <div
+                          key={t.name}
+                          className="about__tech-card"
+                          style={{ animationDelay: `${i * 0.12}s` }}
+                        >
+                          <span
+                            className="about__tech-icon"
+                            style={{ color: t.color }}
+                          >
+                            {t.icon}
+                          </span>
+                          <span className="about__tech-name">{t.name}</span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>

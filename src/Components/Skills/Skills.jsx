@@ -1,156 +1,327 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   FiCode,
   FiLayout,
   FiServer,
   FiDatabase,
+  FiCpu,
   FiGitBranch,
   FiZap,
-  FiBox,
-  FiCpu,
+  FiTool,
+  FiArrowRight,
 } from "react-icons/fi";
 import "./Skills.css";
 
+/* ================================================
+   STATUS — honest labels instead of fake percentages
+   core     = used regularly in real projects
+   working  = used and comfortable, not a daily driver
+   learning = currently studying / building practice projects
+   ================================================ */
+const STATUS = {
+  core: "Core",
+  working: "Working Knowledge",
+  learning: "Currently Learning",
+};
+const STATUS_ORDER = ["core", "working", "learning"];
+
+/* filter row */
+const filters = [
+  { id: "all", label: "All" },
+  { id: "frontend", label: "Frontend" },
+  { id: "backend", label: "Backend" },
+  { id: "database", label: "Database" },
+  { id: "ai", label: "AI & LLM" },
+  { id: "devops", label: "DevOps" },
+];
+
+/* ================================================
+   DATA — edit skills / statuses here only.
+   Move a skill between "core", "working" and "learning" to change its status.
+   ================================================ */
+const categories = [
+  {
+    id: "languages",
+    title: "Languages",
+    icon: FiCode,
+    tags: ["frontend", "database"],
+    skills: {
+      core: ["HTML5", "CSS3", "JavaScript (ES6+)", "SQL"],
+    },
+  },
+  {
+    id: "frontend",
+    title: "Frontend",
+    icon: FiLayout,
+    tags: ["frontend"],
+    skills: {
+      core: [
+        "React.js",
+        "React Hooks",
+        "Tailwind CSS",
+        "Responsive UI",
+        "Axios",
+        "Dynamic Forms",
+      ],
+      working: ["Context API", "State Management", "Bootstrap"],
+      learning: ["React Native"],
+    },
+  },
+  {
+    id: "backend",
+    title: "Backend",
+    icon: FiServer,
+    tags: ["backend"],
+    skills: {
+      core: [
+        "Node.js",
+        "Express.js",
+        "REST APIs",
+        "Middleware",
+        "JWT Authentication",
+        "Authorization",
+        "RBAC",
+        "Validation",
+        "Global Error Handling",
+        "Service Layer Architecture",
+        "Nodemailer",
+        "Multer",
+      ],
+    },
+  },
+  {
+    id: "database",
+    title: "Database",
+    icon: FiDatabase,
+    tags: ["database"],
+    skills: {
+      core: [
+        "MongoDB",
+        "Mongoose",
+        "MongoDB Atlas",
+        "Data Modeling",
+        "Schema Design",
+        "Pagination",
+        "Search & Filtering",
+      ],
+      working: ["MySQL", "Aggregation", "Indexing"],
+    },
+  },
+  {
+    id: "ai",
+    title: "AI & LLM",
+    icon: FiCpu,
+    tags: ["ai"],
+    skills: {
+      learning: [
+        "LLM API Integration",
+        "AI API Integration",
+        "Prompt Engineering",
+        "RAG",
+        "Embeddings",
+        "AI Automation",
+      ],
+    },
+  },
+  {
+    id: "devops",
+    title: "DevOps & Deployment",
+    icon: FiGitBranch,
+    tags: ["devops"],
+    skills: {
+      working: [
+        "Git / GitHub",
+        "Vercel",
+        "Render",
+        "Environment Configuration",
+        "Cloudinary",
+      ],
+      learning: ["Docker", "Linux", "Nginx", "CI/CD", "VPS Deployment"],
+    },
+  },
+  {
+    id: "realtime",
+    title: "Real-Time",
+    icon: FiZap,
+    tags: ["frontend", "backend"],
+    skills: {
+      working: ["Socket.IO", "WebSocket", "Live Notifications"],
+      learning: ["Real-Time Communication"],
+    },
+  },
+  {
+    id: "tools",
+    title: "Tools & Engineering",
+    icon: FiTool,
+    tags: ["backend", "devops"],
+    skills: {
+      working: [
+        "Git / GitHub",
+        "Postman",
+        "VS Code",
+        "CRUD Operations",
+        "RBAC",
+        "Multi-Tenant Architecture",
+        "Soft Delete",
+        "Pagination",
+        "Search & Filtering",
+        "API Testing",
+        "Environment Configuration",
+      ],
+    },
+  },
+];
+
+const learningBadges = [
+  "Backend Development",
+  "AI / LLM",
+  "DevOps",
+  "React Native",
+];
+
+/* ================================================
+   HOOK — one gentle reveal per block
+   ================================================ */
+function useReveal() {
+  const rootRef = useRef(null);
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const els = root.querySelectorAll("[data-reveal]");
+    if (!("IntersectionObserver" in window)) {
+      els.forEach((el) => el.classList.add("is-in"));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-in");
+            io.unobserve(entry.target);
+          }
+        }),
+      { threshold: 0.1, rootMargin: "0px 0px -5% 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+  return rootRef;
+}
+
+/* ================================================
+   COMPONENT
+   ================================================ */
 function Skills() {
-  const skillCategories = [
-    {
-      title: "Languages",
-      icon: <FiCode />,
-      skills: [
-        { name: "HTML", level: 95, color: "#e34c26" },
-        { name: "CSS", level: 90, color: "#264de4" },
-        { name: "JavaScript", level: 90, color: "#f7df1e" },
-        { name: "TypeScript", level: 80, color: "#3178c6" },
-      ],
-    },
-    {
-      title: "Frontend",
-      icon: <FiLayout />,
-      skills: [
-        { name: "React JS", level: 92, color: "#61dafb" },
-        { name: "React Native", level: 70, color: "#61dafb" },
-        { name: "Responsive UI", level: 95, color: "#3b82f6" },
-        { name: "State Management", level: 88, color: "#8b5cf6" },
-      ],
-    },
-    {
-      title: "Backend",
-      icon: <FiServer />,
-      skills: [
-        { name: "Node JS", level: 88, color: "#68a063" },
-        { name: "Express JS", level: 85, color: "#000000" },
-        { name: "REST APIs", level: 90, color: "#3b82f6" },
-        { name: "Authentication", level: 87, color: "#10b981" },
-      ],
-    },
-    {
-      title: "Database",
-      icon: <FiDatabase />,
-      skills: [
-        { name: "MongoDB", level: 85, color: "#47a248" },
-        { name: "Mongoose", level: 88, color: "#880000" },
-        { name: "Data Modeling", level: 82, color: "#3b82f6" },
-        { name: "Aggregation", level: 75, color: "#6366f1" },
-      ],
-    },
-    {
-      title: "Real-Time",
-      icon: <FiZap />,
-      skills: [
-        { name: "WebSocket", level: 82, color: "#000000" },
-        { name: "Socket.IO", level: 80, color: "#010101" },
-        { name: "Live Chat", level: 78, color: "#22c55e" },
-        { name: "Notifications", level: 76, color: "#f59e0b" },
-      ],
-    },
-    {
-      title: "Tools & Concepts",
-      icon: <FiBox />,
-      skills: [
-        { name: "Git/GitHub", level: 90, color: "#181717" },
-        { name: "Postman", level: 85, color: "#ff6c37" },
-        { name: "VS Code", level: 95, color: "#007acc" },
-        { name: "Vercel/Render", level: 88, color: "#000000" },
-        { name: "CRUD Operations", level: 92, color: "#3b82f6" },
-        { name: "RBAC", level: 80, color: "#8b5cf6" },
-      ],
-    },
-  ];
+  const rootRef = useReveal();
+  const [active, setActive] = useState("all");
+
+  const visible = categories.filter(
+    (c) => active === "all" || c.tags.includes(active),
+  );
 
   return (
-    <section className="section skills" id="skills">
-      <div className="container">
-        <h2 className="section-title" data-aos="fade-up">
-          Technical Skills
-        </h2>
-        <p
-          className="section-subtitle text-center"
-          data-aos="fade-up"
-          data-aos-delay="100"
-        >
-          Premium toolkit for building scalable modern web applications
+    <div className="sk" ref={rootRef}>
+      <div className="sk-wrap">
+        {/* ───────── HEADER ───────── */}
+        <header className="sk-header" data-reveal>
+          <span className="sk-pill">
+            <span className="sk-pill-dot" />
+            Technical Skills
+          </span>
+          <h2 className="sk-title">Technologies I Work With</h2>
+          <p className="sk-lead">
+            A practical technology stack focused on modern web development,
+            backend systems, APIs, databases, AI integration and deployment.
+          </p>
+        </header>
+
+        {/* ───────── FILTER + LEGEND ───────── */}
+        <div className="sk-toolbar" data-reveal>
+          <div className="sk-filters" role="group" aria-label="Filter skills">
+            {filters.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                className={`sk-filter ${active === f.id ? "is-active" : ""}`}
+                aria-pressed={active === f.id}
+                onClick={() => setActive(f.id)}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          <ul className="sk-legend" aria-label="Status legend">
+            {STATUS_ORDER.map((s) => (
+              <li key={s}>
+                <span className={`sk-badge sk-badge-${s}`}>{STATUS[s]}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <p className="sk-sr" aria-live="polite">
+          Showing {visible.length} skill{" "}
+          {visible.length === 1 ? "category" : "categories"}
         </p>
 
-        <div className="skills-grid">
-          {skillCategories.map((category, catIndex) => (
-            <div
-              key={category.title}
-              className="skill-category glass"
-              data-aos="fade-up"
-              data-aos-delay={catIndex * 100}
-            >
-              <div className="skill-category-header">
-                <span className="category-icon">{category.icon}</span>
-                <h3>{category.title}</h3>
-              </div>
+        {/* ───────── GRID ───────── */}
+        <div className="sk-grid" data-reveal>
+          {visible.map((cat, idx) => {
+            const Icon = cat.icon;
+            const present = STATUS_ORDER.filter((s) => cat.skills[s]?.length);
+            const count = present.reduce(
+              (n, s) => n + cat.skills[s].length,
+              0,
+            );
 
-              <div className="skill-list">
-                {category.skills.map((skill, skillIndex) => (
-                  <div
-                    key={skill.name}
-                    className="skill-item"
-                    data-aos="fade-left"
-                    data-aos-delay={skillIndex * 50}
-                  >
-                    <div className="skill-info">
-                      <span className="skill-name">{skill.name}</span>
-                      <span className="skill-level">{skill.level}%</span>
-                    </div>
-                    <div className="skill-bar">
-                      <div
-                        className="skill-progress"
-                        style={{
-                          width: `${skill.level}%`,
-                          "--skill-color": skill.color,
-                        }}
-                      >
-                        <span className="skill-glow"></span>
-                      </div>
-                    </div>
+            return (
+              <article
+                className="sk-card"
+                key={`${active}-${cat.id}`}
+                style={{ "--i": idx }}
+              >
+                <header className="sk-card-head">
+                  <span className="sk-icon">
+                    <Icon aria-hidden="true" />
+                  </span>
+                  <div className="sk-card-title">
+                    <h3>{cat.title}</h3>
+                    <ul className="sk-badges">
+                      {present.map((s) => (
+                        <li key={s} className={`sk-badge sk-badge-${s}`}>
+                          {STATUS[s]}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                ))}
-              </div>
-            </div>
-          ))}
+                </header>
+
+                <ul className="sk-chips">
+                  {present.flatMap((s) =>
+                    cat.skills[s].map((name) => (
+                      <li
+                        key={`${s}-${name}`}
+                        className={`sk-chip sk-chip-${s}`}
+                        title={STATUS[s]}
+                      >
+                        {name}
+                      </li>
+                    )),
+                  )}
+                </ul>
+
+                <footer className="sk-card-foot">
+                  {count} {count === 1 ? "technology" : "technologies"}
+                </footer>
+              </article>
+            );
+          })}
         </div>
 
-        {/* Floating Tech Icons */}
-        <div className="skills-floating-icons">
-          <div className="float-icon icon-1">
-            <FiCode />
-          </div>
-          <div className="float-icon icon-2">
-            <FiServer />
-          </div>
-          <div className="float-icon icon-3">
-            <FiDatabase />
-          </div>
-          <div className="float-icon icon-4">
-            <FiZap />
-          </div>
-        </div>
       </div>
-    </section>
+    </div>
   );
 }
 

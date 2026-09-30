@@ -464,7 +464,7 @@ function Home() {
             <span className="role-sub">Backend &amp; AI/LLM</span>
           </div>
 
-          <p className="hero-summary" ref={summaryRef}>
+          <p className="hero-summary" ref={summaryRef} >
             MERN Stack Developer building secure, scalable web applications and
             REST APIs with React.js, Node.js, Express.js & MongoDB — focused on
             clean architecture, authentication, and AI/LLM integration.

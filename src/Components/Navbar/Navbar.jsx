@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { gsap } from "gsap";
 import { FiGithub, FiLinkedin, FiArrowUpRight, FiSend } from "react-icons/fi";
 import "./Navbar.css";
@@ -6,19 +7,34 @@ import "./Navbar.css";
 /* Logo lives in /public/Favicon → reference it by URL (no import needed) */
 const LOGO = "/Favicon/profile_logo_website.png";
 
+/* id = used for active state | to = router target */
 const navLinks = [
-  { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Skills", href: "#skills" },
-  { name: "Projects", href: "#projects" },
-  { name: "Services", href: "#services" },
-  { name: "Contact", href: "#contact" },
+  { id: "home", name: "Home", to: "/" },
+  { id: "about", name: "About", to: "/about" },
+  { id: "skills", name: "Skills", to: "/#skills" },
+  { id: "projects", name: "Projects", to: "/#projects" },
+  { id: "services", name: "Services", to: "/#services" },
+  { id: "contact", name: "Contact", to: "/#contact" },
 ];
+
+/* sections that exist on the Home page (scroll-spy) */
+const SPY_IDS = ["home", "skills", "projects", "services", "contact"];
 
 const GITHUB = "https://github.com/kumarbhadkamkar19-hash";
 const LINKEDIN = "https://www.linkedin.com/in/kumar-bhadkamkar/";
 
+/* small tint wrapper → logo colour matches the red theme a little (see .logo-mark in CSS) */
+function Logo() {
+  return (
+    <span className="logo-mark">
+      <img src={LOGO} alt="Kumar Bhadkamkar logo" className="logo-img" />
+    </span>
+  );
+}
+
 function Navbar() {
+  const { pathname } = useLocation();
+
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -32,6 +48,10 @@ function Navbar() {
   const mobileLinksRef = useRef([]);
   const drawerExtraRef = useRef([]);
   const firstRender = useRef(true);
+
+  /* On /about the About link is active; on / it follows the scroll position */
+  const onAbout = pathname.startsWith("/about");
+  const activeKey = onAbout ? "about" : activeSection;
 
   /* ── Entrance animation ── */
   useEffect(() => {
@@ -54,14 +74,18 @@ function Navbar() {
     return () => ctx.revert();
   }, []);
 
-  /* ── Scroll: glass effect + active section ── */
+  /* ── Scroll: glass effect + scroll-spy (Home page only) ── */
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-      const ids = navLinks.map((l) => l.href.substring(1));
-      for (const id of [...ids].reverse()) {
+
+      if (pathname !== "/") return; // no spy on /about
+
+      for (const id of [...SPY_IDS].reverse()) {
         const el = document.getElementById(id);
-        if (el && window.scrollY >= el.offsetTop - 150) {
+        if (!el) continue;
+        const top = el.getBoundingClientRect().top + window.scrollY;
+        if (window.scrollY >= top - 150) {
           setActiveSection(id);
           break;
         }
@@ -70,7 +94,12 @@ function Navbar() {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [pathname]);
+
+  /* ── Close the drawer whenever the route changes ── */
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   /* ── Drawer open / close animation ── */
   useEffect(() => {
@@ -171,6 +200,18 @@ function Navbar() {
   const toggleMenu = () => setIsOpen((v) => !v);
   const closeMenu = () => setIsOpen(false);
 
+  /* Home / logo while already on "/" → just scroll to top */
+  const handleNavClick = (e, to) => {
+    closeMenu();
+    if (to === "/" && pathname === "/") {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (window.location.hash) {
+        window.history.replaceState(window.history.state, "", "/");
+      }
+    }
+  };
+
   return (
     <>
       {/* Overlay */}
@@ -179,27 +220,36 @@ function Navbar() {
       <nav
         ref={navRef}
         className={`navbar ${scrolled ? "scrolled" : ""} ${isOpen ? "menu-open" : ""}`}
+        aria-label="Main navigation"
       >
         <div className="nav-inner">
           {/* Logo */}
-          <a href="#home" className="logo" ref={logoRef} onClick={closeMenu}>
-            <img src={LOGO} alt="Kumar logo" className="logo-img" />
-          </a>
+          <Link
+            to="/"
+            className="logo"
+            ref={logoRef}
+            aria-label="Kumar Bhadkamkar – Home"
+            onClick={(e) => handleNavClick(e, "/")}
+          >
+            <Logo />
+          </Link>
 
           {/* Desktop links */}
           <ul className="nav-links desktop">
             {navLinks.map((link, i) => (
-              <li key={link.name}>
-                <a
-                  href={link.href}
+              <li key={link.id}>
+                <Link
+                  to={link.to}
                   ref={(el) => (linksRef.current[i] = el)}
-                  className={`nav-link ${activeSection === link.href.substring(1) ? "active" : ""}`}
+                  className={`nav-link ${activeKey === link.id ? "active" : ""}`}
+                  aria-current={activeKey === link.id ? "page" : undefined}
+                  onClick={(e) => handleNavClick(e, link.to)}
                   onMouseEnter={() => handleLinkEnter(i)}
                   onMouseLeave={() => handleLinkLeave(i)}
                 >
                   {link.name}
                   <span className="nav-underline" />
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -250,37 +300,37 @@ function Navbar() {
 
         <div className="drawer-header">
           <span className="drawer-logo">
-            <img src={LOGO} alt="Kumar logo" className="logo-img" />
+            <Logo />
           </span>
           <span className="drawer-tag">MENU</span>
         </div>
 
         <ul className="mobile-nav-links">
           {navLinks.map((link, i) => (
-            <li key={link.name}>
-              <a
-                href={link.href}
+            <li key={link.id}>
+              <Link
+                to={link.to}
                 ref={(el) => (mobileLinksRef.current[i] = el)}
-                className={`mobile-nav-link ${activeSection === link.href.substring(1) ? "active" : ""}`}
-                onClick={closeMenu}
+                className={`mobile-nav-link ${activeKey === link.id ? "active" : ""}`}
+                onClick={(e) => handleNavClick(e, link.to)}
               >
                 <span className="mobile-link-num">0{i + 1}</span>
                 <span className="mobile-link-text">{link.name}</span>
                 <FiArrowUpRight className="mobile-link-arrow" />
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
 
         <div className="drawer-footer">
-          <a
-            href="#contact"
+          <Link
+            to="/#contact"
             className="drawer-cta"
             ref={(el) => (drawerExtraRef.current[0] = el)}
             onClick={closeMenu}
           >
             <FiSend /> Let's Talk
-          </a>
+          </Link>
 
           <div
             className="drawer-socials"

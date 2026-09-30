@@ -500,3 +500,22 @@
     transition: none !important;
   }
 }
+
+/* ===== logo → slight red tint (matches theme) ===== */
+.logo-mark {
+  --logo-tint: 0.3; /* 0 = original colour · 0.3 = slight · 0.6 = strong */
+  position: relative;
+  display: inline-flex;
+  border-radius: 50%;
+  isolation: isolate;
+}
+.logo-mark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #e11d48;
+  mix-blend-mode: color;
+  opacity: var(--logo-tint);
+  pointer-events: none;
+}
