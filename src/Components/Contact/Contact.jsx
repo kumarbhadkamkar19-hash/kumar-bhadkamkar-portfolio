@@ -187,7 +187,7 @@ ${message.trim()}`;
               </p>
             )}
           </form>
-
+             
           {/* Contact Info */}
           <div className="contact-info" data-aos="fade-left">
             <div className="info-cards">
@@ -235,7 +235,7 @@ ${message.trim()}`;
                 </a>
               </div>
             </div>
-
+              
             {/* Availability Badge */}
             <div className="availability-badge glass-red">
               <span className="badge-dot"></span>

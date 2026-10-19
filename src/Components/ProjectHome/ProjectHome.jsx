@@ -1,98 +1,217 @@
-import React from 'react';
-import { Link } from 'react-router-dom'; // React Router वापरून Projects page वर जाण्यासाठी
-import './ProjectHome.css';
+import React, { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import {
+  FiArrowRight,
+  FiArrowUpRight,
+  FiExternalLink,
+  FiGithub,
+  FiShoppingBag,
+  FiSun,
+  FiPackage,
+  FiBookOpen,
+  FiServer,
+} from "react-icons/fi";
+import "./ProjectHome.css";
 
-const ProjectHome = () => {
-  // Home page वर दाखवण्यासाठी 3 मुख्य प्रकल्प
-  const homeProjects = [
-    {
-      id: 1,
-      type: 'FEATURED',
-      category: 'PRODUCT MANAGEMENT',
-      title: 'Domain-Based Product Catalog',
-      description: 'Full-stack multi-tenant product catalogue management platform with React admin dashboard, secure REST APIs, and domain-based data isolation.',
-      tech: ['React', 'Node.js', 'MongoDB', 'JWT', 'RBAC'],
-      stats: '22+ APIs · Multi-Tenant · Cloud',
-      link: '/projects', // हे बटण Full Projects page वर घेऊन जाईल
-    },
-    {
-      id: 2,
-      type: 'CLIENT WEBSITE',
-      category: 'E-COMMERCE',
-      title: 'Meena',
-      description: 'Handcrafted ethnic wear brand with curated collections, modern storefront, mobile-first design, and seamless shopping experience.',
-      tech: ['Next.js', 'Tailwind', 'Stripe', 'Framer Motion'],
-      stats: 'Modern · Mobile-first · Fast Checkout',
-      link: '/projects',
-    },
-    {
-      id: 3,
-      type: 'BACKEND SYSTEM',
-      category: 'ENTERPRISE BACKEND',
-      title: 'School Management System',
-      description: 'Complete backend architecture for school administration with student, staff, and academic management featuring scalable REST APIs.',
-      tech: ['Node.js', 'Express', 'MongoDB', 'Redis'],
-      stats: '40+ APIs · Scalable · Secure Auth',
-      link: '/projects',
+/* ================================================
+   LINKS — replace with your exact repo URLs when ready
+   ================================================ */
+const GITHUB_PROFILE = "https://github.com/kumarbhadkamkar19-hash";
+const SCHOOL_REPO = GITHUB_PROFILE; // → .../School-Management
+const TRIP_REPO = GITHUB_PROFILE; //   → .../Trip-Backend
+
+/* ================================================
+   3 FEATURED PROJECTS (shown as big cards)
+   ================================================ */
+const featured = [
+  {
+    no: "01",
+    tag: "Full Stack MERN",
+    title: "Product Management Platform",
+    role: "Personal project · Full stack",
+    text: "Domain-based multi-tenant platform with a React admin dashboard, JWT authentication, RBAC, hierarchical catalogue management and Cloudinary image uploads.",
+    stack: [
+      "React.js",
+      "Node.js",
+      "Express.js",
+      "MongoDB",
+      "JWT",
+      "Cloudinary",
+    ],
+    metrics: [
+      { v: "22+", l: "REST APIs" },
+      { v: "7", l: "API modules" },
+      { v: "Multi", l: "Tenant" },
+    ],
+    links: [
+      {
+        label: "Live Demo",
+        href: "https://product-management-admin-okzv.vercel.app",
+        primary: true,
+        icon: FiExternalLink,
+      },
+    ],
+    flagship: true,
+  },
+  {
+    no: "02",
+    tag: "B2B Export Website",
+    title: "Meena International",
+    role: "Frontend Developer",
+    text: "Responsive B2B website for a coco peat and coir products manufacturer and exporter, with product specifications, manufacturing process, certifications and enquiry-driven CTAs.",
+    stack: ["React.js", "JavaScript", "CSS", "React Router", "React Icons"],
+    metrics: [
+      { v: "B2B", l: "Export site" },
+      { v: "Live", l: "In production" },
+      { v: "Frontend", l: "My role" },
+    ],
+    links: [
+      {
+        label: "Live Website",
+        href: "https://meenainternationalgroup.com/",
+        primary: true,
+        icon: FiExternalLink,
+      },
+    ],
+  },
+  {
+    no: "03",
+    tag: "Backend API",
+    title: "School Management System API",
+    role: "Backend Developer",
+    text: "Enterprise-style backend with role-based access for Admin, Teacher, Parent and Finance, covering attendance, assignments, timetables, notices and fee management.",
+    stack: ["Node.js", "Express.js", "MongoDB", "Mongoose", "JWT", "RBAC"],
+    metrics: [
+      { v: "20", l: "REST APIs" },
+      { v: "4", l: "User roles" },
+      { v: "RBAC", l: "Access control" },
+    ],
+    links: [
+      {
+        label: "View Code",
+        href: SCHOOL_REPO,
+        primary: true,
+        icon: FiGithub,
+      },
+    ],
+  },
+];
+
+
+/* ================================================
+   HOOK — one gentle reveal per block
+   ================================================ */
+function useReveal() {
+  const rootRef = useRef(null);
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const els = root.querySelectorAll("[data-reveal]");
+    if (!("IntersectionObserver" in window)) {
+      els.forEach((el) => el.classList.add("is-in"));
+      return;
     }
-  ];
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-in");
+            io.unobserve(entry.target);
+          }
+        }),
+      { threshold: 0.1, rootMargin: "0px 0px -5% 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+  return rootRef;
+}
+
+/* ================================================
+   COMPONENT
+   ================================================ */
+function ProjectHome() {
+  const rootRef = useReveal();
 
   return (
-    <section className="project-home-section" id="home-projects">
-      <div className="project-home-container">
-        
-        {/* Section Header */}
-        <div className="project-home-header">
-          <div className="header-label">
-            <span className="label-dot"></span>
-            <span>SELECTED WORK</span>
+    <div className="ph" ref={rootRef}>
+      <div className="ph-wrap">
+        {/* ───────── HEADER ───────── */}
+        <header className="ph-header" data-reveal>
+          <div className="ph-header-text">
+            <span className="ph-pill">
+              <span className="ph-pill-dot" />
+              Projects
+            </span>
+            <h2 className="ph-title">Selected Work</h2>
+            <p className="ph-lead">
+              Real projects, from live client websites to full-stack and backend
+              systems.
+            </p>
           </div>
-          <h2 className="project-home-title">
-            Projects that <span className="accent-text">matter</span>
-          </h2>
-          <p className="project-home-subtitle">
-            A glimpse into enterprise platforms, client websites, and scalable backends.
-          </p>
-        </div>
 
-        {/* 3 Cards Grid */}
-        <div className="project-home-grid">
-          {homeProjects.map((project) => (
-            <div key={project.id} className="project-home-card">
-              <div className="card-badge">{project.type}</div>
-              <div className="card-category">{project.category}</div>
-              <h3 className="card-title">{project.title}</h3>
-              <p className="card-description">{project.description}</p>
-              
-              <div className="card-stats">
-                <span className="stats-dot"></span>
-                {project.stats}
+          <Link to="/projects" className="ph-head-link">
+            View all projects <FiArrowRight aria-hidden="true" />
+          </Link>
+        </header>
+
+        {/* ───────── 3 FEATURED CARDS ───────── */}
+        <div className="ph-grid" data-reveal>
+          {featured.map((p) => (
+            <article
+              className={`ph-card ${p.flagship ? "ph-card-flagship" : ""}`}
+              key={p.title}
+            >
+              <div className="ph-card-top">
+                <span className="ph-no">{p.no}</span>
+                <span className="ph-tag">{p.tag}</span>
+                {p.flagship && <span className="ph-featured">Featured</span>}
               </div>
-              
-              <div className="card-tech">
-                {project.tech.map((t) => (
-                  <span key={t} className="tech-pill">{t}</span>
+
+              <div className="ph-card-main">
+                <h3 className="ph-card-title">{p.title}</h3>
+                <p className="ph-role">{p.role}</p>
+                <p className="ph-text">{p.text}</p>
+              </div>
+
+              <ul className="ph-chips" aria-label={`${p.title} tech stack`}>
+                {p.stack.map((s) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ul>
+
+              <dl className="ph-metrics">
+                {p.metrics.map((m) => (
+                  <div className="ph-metric" key={m.l}>
+                    <dt className="ph-metric-v">{m.v}</dt>
+                    <dd className="ph-metric-l">{m.l}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              <div className="ph-actions">
+                {p.links.map(({ label, href, primary,  icon: Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`ph-btn ${primary ? "ph-btn-primary" : "ph-btn-outline"}`}
+                  >
+                    {label}
+                    {React.createElement(Icon, { "aria-hidden": "true" })}
+                    <span className="ph-sr"> (opens in a new tab)</span>
+                  </a>
                 ))}
               </div>
-
-              {/* View Project Button -> Renders Projects.jsx */}
-              <Link to={project.link} className="card-action-btn">
-                View Project <span className="btn-arrow">→</span>
-              </Link>
-            </div>
+            </article>
           ))}
         </div>
 
-        {/* View All Button */}
-        <div className="project-home-footer">
-          <Link to="/projects" className="view-all-btn">
-            View All Projects & Case Studies <span className="btn-arrow">→</span>
-          </Link>
-        </div>
-
+    
       </div>
-    </section>
+    </div>
   );
-};
+}
 
 export default ProjectHome;

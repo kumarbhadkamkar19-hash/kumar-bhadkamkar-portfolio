@@ -141,7 +141,7 @@ import Skills from "./Components/Skills/Skills";
  // 3 Cards वाला component
 import Projects from "./Components/Projects/Projects";       // Full Page वाला component
 
-import Services from "./Components/Services/Services";
+// import Services from "./Components/Services/Services";
 import Contact from "./Components/Contact/Contact";
 import Footer from "./Components/Footer/Footer";
 
@@ -207,9 +207,9 @@ function App() {
                  <ProjectHome/>
                 </section>
 
-                <section id="services">
+                {/* <section id="services">
                   <Services />
-                </section>
+                </section> */}
 
                 <section id="contact">
                   <Contact />
