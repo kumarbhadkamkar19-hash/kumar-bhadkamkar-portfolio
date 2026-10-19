@@ -379,7 +379,7 @@ const navLinks = [
   { id: "skills", name: "Skills", to: "/#skills" },
   // 🔹 CHANGE 1: "/#projects" ऐवजी "/projects" केले आहे जेणेकरून ते नवीन page वर जाईल
   { id: "projects", name: "Projects", to: "/projects" },
-  { id: "services", name: "Services", to: "/#services" },
+  // { id: "services", name: "Services", to: "/#services" },
   { id: "contact", name: "Contact", to: "/#contact" },
 ];
 

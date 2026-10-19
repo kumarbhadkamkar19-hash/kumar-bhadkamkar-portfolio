@@ -147,6 +147,7 @@ import Footer from "./Components/Footer/Footer";
 
 import { initParticles } from "./utils/particles";
 import ProjectHome from "./Components/ProjectHome/ProjectHome";
+import ScrollToTop from "./Components/ScrollToTop/ScrollToTop";
 
 function ScrollManager() {
   const { pathname, hash, key } = useLocation();
@@ -184,6 +185,7 @@ function App() {
 
   return (
     <BrowserRouter>
+   <ScrollToTop/>
       <ScrollManager />
 
       <div className="particles" id="particles"></div>
